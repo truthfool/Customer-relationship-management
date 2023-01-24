@@ -6,7 +6,7 @@ from .filters import OrderFilter
 from django.contrib import messages
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.decorators import login_required
-
+from .decorators import unauthenticated_user
 # Create your views here.
 @login_required(login_url='login')
 def home(request):
@@ -75,9 +75,8 @@ def delete_order(request,pk):
     context={'item':order}
     return render(request,template_name='accounts/delete.html',context=context)
 
+@unauthenticated_user
 def loginPage(request):
-    if request.user.is_authenticated:
-        return redirect('home')
     if request.method == 'POST':
         username=request.POST.get('username')
         password=request.POST.get('password')
@@ -90,21 +89,23 @@ def loginPage(request):
     context={}
     return render(request,template_name='accounts/login.html',context=context)
 
+@unauthenticated_user
 def registerPage(request):
     form=CreateUserForm()
-    if request.user.is_authenticated:
-        return redirect('home')
-    else:
-        if request.method=='POST':
-            form=CreateUserForm(request.POST)
-            if form.is_valid():
-                form.save()
-                username=form.cleaned_data.get('username')
-                messages.success(request,'Account was created for user :'+ username)
-                return redirect('login')
+    if request.method=='POST':
+        form=CreateUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username=form.cleaned_data.get('username')
+            messages.success(request,'Account was created for user :'+ username)
+            return redirect('login')
     context = {'form':form}
     return render(request, 'accounts/register.html', context)
 
 def logoutPage(request):
     logout(request)
     return redirect('login')
+
+def userPage(request):
+    context={}
+    return render(request,template_name='accounts/user.html',context=context)
