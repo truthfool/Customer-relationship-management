@@ -10,3 +10,5 @@ Functionalities :
 3. Dashboard page to track all customers and their orders.
 4. Products placed for each individual customer.
 5. Password reset using email.
+
+Deployed at : http://truthfool.pythonanywhere.com
